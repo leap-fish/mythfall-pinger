@@ -1,35 +1,40 @@
 <script>
-	import { onMount } from "svelte"
-	import IconSwitch from "./IconSwitch.svelte"
-	import { localStore } from "./localstorage"
-	import { get } from "svelte/store"
-	import axios from "axios"
+	// @ts-nocheck
 
-	let audio
+	import { onMount } from "svelte";
+	import IconSwitch from "./IconSwitch.svelte";
+	import { localStore } from "./localstorage";
+	import { get } from "svelte/store";
+	import axios from "axios";
 
-	const minimumStability = localStore("mythfall-ping-minimum", 500)
+	import { mdiGithub } from "@mdi/js";
+	import Icon from "mdi-svelte";
 
-	let enabled = false
-	let response = undefined
-	let lastChecked = undefined
+	let audio;
 
-	let time = Date.now()
+	const minimumStability = localStore("mythfall-ping-minimum", 500);
+
+	let enabled = false;
+	let response = undefined;
+	let lastChecked = undefined;
+
+	let time = Date.now();
 
 	onMount(() => {
 		if ($minimumStability == undefined) {
-			$minimumStability = 500
+			$minimumStability = 500;
 		}
 
-		setInterval(() => updateAndAlert(), 1000 * 6)
-		setInterval(() => (time = Date.now()), 100)
-	})
+		setInterval(() => updateAndAlert(), 1000 * 6);
+		setInterval(() => (time = Date.now()), 100);
+	});
 
 	const apiUrl = () =>
-		`https://api.allorigins.win/get?url=${encodeURIComponent("https://alpha.mythfall.com:7779/api/status?ts=" + time)}`
+		`https://api.allorigins.win/get?url=${encodeURIComponent("https://alpha.mythfall.com:7779/api/status?ts=" + time)}`;
 
 	const updateAndAlert = async () => {
-		lastChecked = Date.now()
-		let resp = JSON.parse((await axios.get(apiUrl())).data.contents)
+		lastChecked = Date.now();
+		let resp = JSON.parse((await axios.get(apiUrl())).data.contents);
 		// We already have a number!
 		if (
 			enabled &&
@@ -38,15 +43,15 @@
 			response?.Spheres.length > 0 &&
 			response?.Spheres[0].Stability < get(minimumStability)
 		) {
-			if (audio) audio?.play()
+			if (audio) audio?.play();
 
-			console.log("Alerting!")
-			enabled = false
+			console.log("Alerting!");
+			enabled = false;
 		}
-		response = resp
-	}
+		response = resp;
+	};
 
-	$: timeSince = Math.round((time - lastChecked) / 1000)
+	$: timeSince = Math.round((time - lastChecked) / 1000);
 </script>
 
 <main>
@@ -54,13 +59,22 @@
 	<div class="header centered">
 		<h1>Mythfall Boss Pinger</h1>
 		<span
-			>Made with ❤️ by <a href="https://discord.com/channels/@me/113267282838327296/" target="_blank">@gin</a>
+			>Made with ❤️ by <a
+				href="https://discord.com/channels/@me/113267282838327296/"
+				target="_blank">@gin</a
+			>
 		</span>
 		<small class="contributions"
 			>With contributions from
-			<a href="https://discord.com/channels/@me/278185704889122816/" target="_blank">@Mqix</a>
+			<a
+				href="https://discord.com/channels/@me/278185704889122816/"
+				target="_blank">@Mqix</a
+			>
 			and
-			<a href="https://discord.com/channels/@me/287954569844097024/" target="_blank">@SamieZaurus</a>
+			<a
+				href="https://discord.com/channels/@me/287954569844097024/"
+				target="_blank">@SamieZaurus</a
+			>
 		</small>
 	</div>
 
@@ -82,7 +96,14 @@
 
 		<div class="config">
 			<span>Notify me when stability drops below</span>
-			<input type="number" id="tentacles" bind:value={$minimumStability} name="tentacles" min="10" max="9999" />
+			<input
+				type="number"
+				id="tentacles"
+				bind:value={$minimumStability}
+				name="tentacles"
+				min="10"
+				max="9999"
+			/>
 		</div>
 	</div>
 
@@ -100,6 +121,13 @@
 	{:else}
 		<small>Last updated @ {lastChecked ?? "not updated yet"}</small>
 	{/if}
+
+	<span class="contribution">
+		Want to contribute?
+		<a href="https://github.com/leap-fish/mythfall-pinger" target="_blank">
+			<Icon path={mdiGithub} /> Github
+		</a>
+	</span>
 </main>
 
 <style lang="scss">
