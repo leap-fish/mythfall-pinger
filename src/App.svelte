@@ -12,7 +12,7 @@
 
 	let audio;
 
-	const minimumStability = localStore("mythfall-ping-minimum", 500);
+	const minimumStability = localStore("mythfall-ping-minimum", 50);
 
 	let enabled = false;
 	let response = undefined;
@@ -22,7 +22,7 @@
 
 	onMount(() => {
 		if ($minimumStability == undefined) {
-			$minimumStability = 500;
+			$minimumStability = 50;
 		}
 
 		setInterval(() => updateAndAlert(), 1000 * 6);
@@ -101,8 +101,8 @@
 				id="tentacles"
 				bind:value={$minimumStability}
 				name="tentacles"
-				min="10"
-				max="9999"
+				min="0"
+				max="100"
 			/>
 		</div>
 	</div>
